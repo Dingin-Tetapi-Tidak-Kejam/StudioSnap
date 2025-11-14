@@ -26,9 +26,7 @@ const About = () => {
               Fully Customizable Layouts
             </h3>
             <p className="text-[#610049]">
-              Pick from a wide range of layouts, frames, and backgrounds that
-              match your event theme. Everything can be tailored so your photos
-              feel uniquely yours
+              Pick a layout you like and personalize it by choosing the frame color that fits your event
             </p>
           </div>
 
