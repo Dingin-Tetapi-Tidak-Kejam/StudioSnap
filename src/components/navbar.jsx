@@ -10,13 +10,17 @@ const Navbar = () => {
           </div>
 
           <div className="flex items-center">
-            <Link to="/"
-              className="text-base font-semibold text-[#610049] hover:opacity-50" >
+            <Link
+              to="/"
+              className="text-base font-bold text-[#610049] hover:opacity-50"
+            >
               Home
             </Link>
 
-            <Link to="/layout"
-              className="text-base font-semibold text-[#610049] hover:opacity-50 ml-8" >
+            <Link
+              to="/layout"
+              className="text-base font-bold text-[#610049] hover:opacity-50 ml-8"
+            >
               Choose Layout
             </Link>
           </div>

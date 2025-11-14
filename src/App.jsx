@@ -23,7 +23,7 @@ const Home = () => {
       <button
         onClick={() => navigate("/welcome")}
         className="inline-block no-underline bg-[#FCF9E9] text-[#610049] rounded-full px-[55px]
-        py-4 text-[20px] font-semibold shadow-[0_2px_25px_#FFA3A3] transition-transform duration-200 
+        py-4 text-[20px] font-bold shadow-[0_2px_25px_#FFA3A3] transition-transform duration-200 
         hover:scale-105 hover:bg-[#FDF2D0]"
       >
         START
