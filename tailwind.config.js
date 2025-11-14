@@ -3,8 +3,11 @@ export default {
   content: ["./index.html", "./src/**/*.{js,jsx,ts,tsx}"],
   theme: {
     extend: {
-      backgroundImage: {
-        "gradient-radial": "radial-gradient(circle, #FCF9E9 10%, #FFBDBD)",
+      fontFamily: {
+        mont: ["Montserrat", "sans-serif"],
+        backgroundImage: {
+          "gradient-radial": "radial-gradient(circle, #FCF9E9 10%, #FFBDBD)",
+        },
       },
     },
   },
