@@ -10,6 +10,7 @@ import Welcome from "./pages/welcome.jsx";
 import Cam from "./pages/cam.jsx";
 import LayoutPage from "./pages/layout.jsx";
 import Customize from "./pages/customize.jsx";
+import About from "./pages/about.jsx";
 
 const Home = () => {
   const navigate = useNavigate();
@@ -40,6 +41,7 @@ const App = () => {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/welcome" element={<Welcome />} />
+          <Route path="/about" element={<About />} />
           <Route path="/cam" element={<Cam />} />
           <Route path="/layout" element={<LayoutPage />} />
           <Route path="/customize" element={<Customize />} />
