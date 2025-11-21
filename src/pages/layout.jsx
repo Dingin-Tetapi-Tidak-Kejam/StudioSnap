@@ -5,7 +5,6 @@ import layout2 from "../assets/Layout2.svg";
 import layout3 from "../assets/Layout3.svg";
 import layout4 from "../assets/Layout4.svg";
 
-
 const Layout = () => {
   const [selectedLayout, setSelectedLayout] = useState(null);
   const navigate = useNavigate();
@@ -16,15 +15,67 @@ const Layout = () => {
 
   const handleContinue = () => {
     if (selectedLayout) {
+      const layout = photoLayouts.find(l => l.id === selectedLayout);
+      
+      // Save layout info to localStorage
+      localStorage.setItem("selectedLayoutId", selectedLayout);
+      localStorage.setItem("totalShots", layout.photoCount.toString());
+      localStorage.setItem("layoutConfig", JSON.stringify({
+        id: selectedLayout,
+        photoCount: layout.photoCount,
+        gridConfig: layout.gridConfig,
+      }));
+      
       navigate("/cam");
     }
   };
 
+  // Define layouts with their photo count and grid configuration
   const photoLayouts = [
-    { id: "1", image: layout1, alt: "Layout 1" },
-    { id: "2", image: layout2, alt: "Layout 2" },
-    { id: "3", image: layout3, alt: "Layout 3" }, 
-    { id: "4", image: layout4, alt: "Layout 4" }, 
+    { 
+      id: "1", 
+      image: layout1, 
+      alt: "Layout 1 - 4 photos vertical",
+      photoCount: 4,
+      gridConfig: {
+        columns: 1,
+        rows: 4,
+        aspectRatio: "3/4", // Each photo aspect ratio
+      }
+    },
+    { 
+      id: "2", 
+      image: layout2, 
+      alt: "Layout 2 - 3 photos vertical",
+      photoCount: 3,
+      gridConfig: {
+        columns: 1,
+        rows: 3,
+        aspectRatio: "4/3",
+      }
+    },
+    { 
+      id: "3", 
+      image: layout3, 
+      alt: "Layout 3 - 4 photos grid",
+      photoCount: 4,
+      gridConfig: {
+        columns: 2,
+        rows: 2,
+        aspectRatio: "1/1",
+      }
+    },
+    { 
+      id: "4", 
+      image: layout4, 
+      alt: "Layout 4 - 2 photos vertical",
+      photoCount: 2,
+      gridConfig: {
+        columns: 1,
+        rows: 2,
+        aspectRatio: "3/4",
+      }
+    },
   ];
 
   return (
@@ -47,7 +98,7 @@ const Layout = () => {
               onClick={() => handleLayoutClick(layout.id)}
               className={`
                 w-46 h-auto cursor-pointer transition duration-300 transform hover:scale-105 
-                overflow-hidden rounded-sm
+                overflow-hidden rounded-sm relative
               `}
               style={{
                 boxShadow:
@@ -60,13 +111,24 @@ const Layout = () => {
                 src={layout.image}
                 alt={layout.alt}
                 className="w-full h-full object-cover"
-            />
-          </div>
-        ))}
+              />
+              {/* Photo count badge */}
+              <div className="absolute bottom-2 right-2 bg-[#610049] text-white text-xs font-bold px-2 py-1 rounded-full">
+                {layout.photoCount} photos
+              </div>
+            </div>
+          ))}
         </div>
       </div>
 
-      <div className="text-center mt-12">
+      {/* Selected layout info */}
+      {selectedLayout && (
+        <p className="text-center text-[#610049] mt-6 font-medium">
+          Selected: Layout {selectedLayout} ({photoLayouts.find(l => l.id === selectedLayout)?.photoCount} photos)
+        </p>
+      )}
+
+      <div className="text-center mt-8">
         <button
           onClick={handleContinue}
           disabled={!selectedLayout}
