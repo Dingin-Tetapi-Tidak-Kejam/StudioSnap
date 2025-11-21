@@ -10,6 +10,7 @@ import Welcome from "./pages/welcome.jsx";
 import Cam from "./pages/cam.jsx";
 import LayoutPage from "./pages/layout.jsx";
 import Customize from "./pages/customize.jsx";
+import Login from "./pages/login.jsx";
 
 const Home = () => {
   const navigate = useNavigate();
@@ -43,6 +44,7 @@ const App = () => {
           <Route path="/cam" element={<Cam />} />
           <Route path="/layout" element={<LayoutPage />} />
           <Route path="/customize" element={<Customize />} />
+          <Route path="/login" element={<Login />} />
         </Routes>
       </Layout>
     </Router>
