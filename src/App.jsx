@@ -10,6 +10,8 @@ import Welcome from "./pages/welcome.jsx";
 import Cam from "./pages/cam.jsx";
 import LayoutPage from "./pages/layout.jsx";
 import Customize from "./pages/customize.jsx";
+import Login from "./pages/login.jsx";
+import Signup from "./pages/signup.jsx";
 import About from "./pages/about.jsx";
 
 const Home = () => {
@@ -36,15 +38,16 @@ const Home = () => {
 const App = () => {
   return (
     <Router>
-      <Layout>
-        <Navbar />
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/welcome" element={<Welcome />} />
-          <Route path="/about" element={<About />} />
-          <Route path="/cam" element={<Cam />} />
-          <Route path="/layout" element={<LayoutPage />} />
-          <Route path="/customize" element={<Customize />} />
+        <Layout>
+          <Navbar />
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/welcome" element={<Welcome />} />
+              <Route path="/cam" element={<Cam />} />
+              <Route path="/layout" element={<LayoutPage />} />
+              <Route path="/customize" element={<Customize />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/signup" element={<Signup />} />
         </Routes>
       </Layout>
     </Router>

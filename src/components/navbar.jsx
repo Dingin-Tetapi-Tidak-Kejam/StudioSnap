@@ -30,6 +30,12 @@ const Navbar = () => {
             >
               Choose Layout
             </Link>
+            <Link
+              to="/login"
+              className="text-base font-bold text-[#610049] hover:opacity-50 ml-8"
+            >
+              Login
+            </Link>
           </div>
         </div>
       </nav>
