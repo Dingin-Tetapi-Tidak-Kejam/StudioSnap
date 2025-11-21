@@ -11,6 +11,7 @@ import Cam from "./pages/cam.jsx";
 import LayoutPage from "./pages/layout.jsx";
 import Customize from "./pages/customize.jsx";
 import Login from "./pages/login.jsx";
+import Signup from "./pages/signup.jsx";
 
 const Home = () => {
   const navigate = useNavigate();
@@ -36,15 +37,16 @@ const Home = () => {
 const App = () => {
   return (
     <Router>
-      <Layout>
-        <Navbar />
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/welcome" element={<Welcome />} />
-          <Route path="/cam" element={<Cam />} />
-          <Route path="/layout" element={<LayoutPage />} />
-          <Route path="/customize" element={<Customize />} />
-          <Route path="/login" element={<Login />} />
+        <Layout>
+          <Navbar />
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/welcome" element={<Welcome />} />
+              <Route path="/cam" element={<Cam />} />
+              <Route path="/layout" element={<LayoutPage />} />
+              <Route path="/customize" element={<Customize />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/signup" element={<Signup />} />
         </Routes>
       </Layout>
     </Router>
