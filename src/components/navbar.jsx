@@ -9,7 +9,7 @@ const Navbar = () => {
             StudioSnap
           </div>
 
-          <div className="flex items-center">
+          <div className="flex items-center gap-x-6">
             <Link
               to="/"
               className="text-base font-bold text-[#610049] hover:opacity-50"
@@ -18,8 +18,15 @@ const Navbar = () => {
             </Link>
 
             <Link
+              to="/about"
+              className="text-base font-bold text-[#610049] hover:opacity-50"
+            >
+              About
+            </Link>
+
+            <Link
               to="/layout"
-              className="text-base font-bold text-[#610049] hover:opacity-50 ml-8"
+              className="text-base font-bold text-[#610049] hover:opacity-50"
             >
               Choose Layout
             </Link>
