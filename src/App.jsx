@@ -10,6 +10,8 @@ import Welcome from "./pages/welcome.jsx";
 import Cam from "./pages/cam.jsx";
 import LayoutPage from "./pages/layout.jsx";
 import Customize from "./pages/customize.jsx";
+import Login from "./pages/login.jsx";
+import Signup from "./pages/signup.jsx";
 import About from "./pages/about.jsx";
 import Library from "./pages/library.jsx";
 
