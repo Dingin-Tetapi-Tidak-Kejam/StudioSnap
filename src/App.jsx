@@ -15,6 +15,7 @@ import Customize from "./pages/customize.jsx";
 import Login from "./pages/login.jsx";
 import Signup from "./pages/signup.jsx";
 import About from "./pages/about.jsx";
+import Library from "./pages/library.jsx";
 
 const Home = () => {
   const navigate = useNavigate();
