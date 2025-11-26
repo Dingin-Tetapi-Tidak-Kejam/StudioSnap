@@ -3,6 +3,8 @@ import {
   Routes,
   Route,
   useNavigate,
+  useLocation,
+  Navigate,
 } from "react-router-dom";
 import Navbar from "./components/navbar.jsx";
 import Layout from "./components/layout.jsx";
@@ -35,22 +37,30 @@ const Home = () => {
     </main>
   );
 };
+const AppLayout = () => {
+  const location = useLocation();
+  const hideLayout = ["/login", "/signup"].includes(location.pathname);
+  return (
+    <Layout>
+      {!hideLayout && <Navbar />}
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/welcome" element={<Welcome />} />
+        <Route path="/cam" element={<Cam />} />
+        <Route path="/layout" element={<LayoutPage />} />
+        <Route path="/customize" element={<Customize />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<Signup />} />
+      </Routes>
+    </Layout>
+  );
+};
 
 const App = () => {
   return (
     <Router>
-      <Layout>
-        <Navbar />
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/welcome" element={<Welcome />} />
-          <Route path="/about" element={<About />} />
-          <Route path="/cam" element={<Cam />} />
-          <Route path="/layout" element={<LayoutPage />} />
-          <Route path="/customize" element={<Customize />} />
-          <Route path="/library" element={<Library />} />
-        </Routes>
-      </Layout>
+      <AppLayout />
     </Router>
   );
 };
