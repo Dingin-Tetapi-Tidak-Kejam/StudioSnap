@@ -1,21 +1,44 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
+const API_URL = "https://studiosnap-backend.vercel.app";
 const Signup = () => {
   const navigate = useNavigate();
-
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [username, setUsername] = useState("");
-
-  const handleSubmit = (e) => {
+  const [loading, setLoading] = useState(false); 
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
 
-    localStorage.setItem("email", email);
-    localStorage.setItem("password", password);
-    localStorage.setItem("username", username);
+    try {
+      const response = await fetch(`${API_URL}/api/auth/register`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          username: username,
+          email: email,
+          password: password,
+        }),
+      });
 
-    navigate("/welcome");
+      const data = await response.json();
+
+      if (response.ok) {
+        alert("Registration Successful! Please Login.");
+        navigate("/login");
+      } else {
+        alert(data.message || "Registration Failed.");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      alert("A connection error occurred. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -71,9 +94,10 @@ const Signup = () => {
 
             <button
               type="submit"
-              className="w-full bg-[#610049] text-white py-2 rounded-lg hover:bg-[#4a003a] transition-colors duration-200"
+              disabled={loading}
+              className={`w-full bg-[#610049] text-white py-2 rounded-lg hover:bg-[#4a003a] transition-colors duration-200 ${loading ? "opacity-50 cursor-not-allowed" : ""}`}
             >
-              Login
+              {loading ? "Loading..." : "Sign Up"}
             </button>
           </form>
 
@@ -83,7 +107,7 @@ const Signup = () => {
               className="text-[#610049] font-semibold cursor-pointer hover:underline"
               onClick={() => navigate("/login")}
             >
-              Sign Up
+              Login here
             </span>
           </p>
         </div>
