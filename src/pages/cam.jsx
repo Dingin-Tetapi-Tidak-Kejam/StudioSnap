@@ -233,9 +233,9 @@ export default function CamPage() {
   }
 
   return (
-    <div className="gap-5 cam w-full min-h-screen flex flex-col items-center px-[30px] py-[40px] text-[#610049]">
+    <div className="cam w-full min-h-screen flex flex-col items-center px-[30px] py-[40px] text-[#610049]">
       {/* Layout info banner */}
-      <div className="bg-[#610049] text-white py-3 px-6 rounded-full">
+      <div className="bg-[#610049] text-white py-3 px-6 rounded-full mt-4">
         <span className="font-semibold">
           {layoutId ? `Layout ${layoutId} • ` : ""}
           Taking {totalShots} photo{totalShots !== 1 ? "s" : ""}
@@ -245,7 +245,7 @@ export default function CamPage() {
       {/* Camera and Preview Container */}
       <div className="flex flex-row items-center gap-5 ml-20">
         {/* Camera */}
-        <div className="camera-container relative border-[3px] border-[#610049] rounded-[10px] overflow-hidden shadow-[0_2px_25px_#FFA3A3]">
+        <div className="camera-container relative border-[3px] border-[#610049] rounded-[10px] overflow-hidden shadow-[0_2px_25px_#FFA3A3] mt-6">
           <video
             ref={videoRef}
             autoPlay
