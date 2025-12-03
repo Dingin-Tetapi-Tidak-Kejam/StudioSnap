@@ -1,53 +1,93 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 export default function CamPage() {
   const navigate = useNavigate();
-
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
-
+  const [dbFilters, setDbFilters] = useState([]);
   const [filter, setFilter] = useState("none");
   const [countdown, setCountdown] = useState(null);
   const [isCapturing, setIsCapturing] = useState(false);
   const [isVideoReady, setIsVideoReady] = useState(false);
   const [currentShot, setCurrentShot] = useState(0);
-
   const [totalShots, setTotalShots] = useState(4);
   const [layoutId, setLayoutId] = useState(null);
   const [takenPhotos, setTakenPhotos] = useState([]);
-
+  const [activeSessionId, setActiveSessionId] = useState(null);
+  const currentUserId = "1";
   const photosArrayRef = useRef([]);
   const isCapturingRef = useRef(false);
   const filterRef = useRef(filter);
+
+  const API_BASE_URL = "https://studiosnap-backend.vercel.app";
 
   useEffect(() => {
     filterRef.current = filter;
   }, [filter]);
 
-  // Load layout config
+  const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+  useEffect(() => {
+    const fetchFilters = async () => {
+      try {
+        const response = await axios.get(`${API_BASE_URL}/api/filters`);
+        if (
+          response.data.status === "success" &&
+          response.data.data.length > 0
+        ) {
+          const mappedFilters = response.data.data.map((f) => ({
+            name: f.name,
+            value: f.css_value,
+          }));
+          setDbFilters(mappedFilters);
+        } else {
+          useDefaultFilters();
+        }
+      } catch (error) {
+        console.warn("Using default filters (Offline/DB Error).");
+        useDefaultFilters();
+      }
+    };
+
+    fetchFilters();
+  }, []);
+
+  const useDefaultFilters = () => {
+    setDbFilters([
+      { name: "No Filter", value: "none" },
+      { name: "B&W", value: "grayscale(100%) contrast(130%)" },
+      { name: "Sepia", value: "sepia(100%)" },
+      { name: "Vintage", value: "sepia(60%) contrast(110%)" },
+    ]);
+  };
+
   useEffect(() => {
     const configJson = localStorage.getItem("layoutConfig");
-
     if (configJson) {
       try {
         const config = JSON.parse(configJson);
-        console.log("Loaded layout config:", config);
         setTotalShots(config.photoCount);
         setLayoutId(config.id);
       } catch (e) {
-        console.error("Failed to parse layout config:", e);
-        const shots = parseInt(localStorage.getItem("totalShots")) || 4;
-        setTotalShots(shots);
+        setTotalShots(4);
       }
     } else {
-      const shots = parseInt(localStorage.getItem("totalShots")) || 4;
-      console.log("No layout config found, using fallback:", shots);
-      setTotalShots(shots);
+      setTotalShots(4);
     }
   }, []);
 
-  // Start Camera
+  async function handleEndSession(sessionId) {
+    if (!sessionId) return;
+    try {
+      axios.post(`${API_BASE_URL}/api/end-session`, { session_id: sessionId });
+      setActiveSessionId(null);
+    } catch (error) {
+      console.error("Failed to end session on server:", error);
+    }
+  }
+
   useEffect(() => {
     async function startCamera() {
       try {
@@ -64,117 +104,108 @@ export default function CamPage() {
           };
         }
       } catch (err) {
-        console.error("Error accessing camera:", err);
         alert("Camera access denied. Please allow camera permission.");
       }
     }
-
     startCamera();
-
     return () => {
       if (videoRef.current?.srcObject) {
         videoRef.current.srcObject.getTracks().forEach((t) => t.stop());
       }
+      if (activeSessionId) {
+        handleEndSession(activeSessionId);
+      }
     };
-  }, []);
-
-  const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+  }, [activeSessionId]);
 
   async function startPhotoSession() {
-    if (isCapturingRef.current || !isVideoReady) {
-      console.log("Cannot start: already capturing or video not ready");
-      return;
+    if (isCapturingRef.current || !isVideoReady) return;
+
+    try {
+      const response = await axios.post(`${API_BASE_URL}/api/start-session`, {
+        user_id: currentUserId,
+        filter: filter,
+      });
+
+      if (response.data.status === "success") {
+        setActiveSessionId(response.data.data.session_id);
+      }
+    } catch (error) {
+      console.warn("Offline mode: Failed to start session on server.");
     }
 
-    console.log(`Starting photo session with ${totalShots} shots...`);
     isCapturingRef.current = true;
     setIsCapturing(true);
     photosArrayRef.current = [];
     setTakenPhotos([]);
 
     for (let shot = 1; shot <= totalShots; shot++) {
-      console.log(`Starting shot ${shot} of ${totalShots}`);
       setCurrentShot(shot);
-
       for (let i = 3; i >= 1; i--) {
         setCountdown(i);
         await sleep(1000);
       }
 
-      // Take photo and update preview
       const photoData = takeOnePhoto();
       if (photoData) {
         photosArrayRef.current.push(photoData);
         setTakenPhotos((prev) => [...prev, photoData]);
-        console.log(`Shot ${shot} captured successfully`);
-      } else {
-        console.log(`Shot ${shot} failed`);
       }
-
       setCountdown("📸");
       await sleep(800);
       setCountdown(null);
-
-      if (shot < totalShots) {
-        await sleep(1500);
-      }
+      if (shot < totalShots) await sleep(1500);
     }
 
-    console.log(
-      `Photo session complete. Captured ${photosArrayRef.current.length} photos`
-    );
-    await saveAndNavigate();
+    await uploadPhotosAndNavigate();
   }
 
-  async function saveAndNavigate() {
+  async function uploadPhotosAndNavigate() {
     const photos = photosArrayRef.current;
 
     if (photos.length === 0) {
-      alert("No photos were captured. Please try again.");
+      alert("No photos captured.");
       isCapturingRef.current = false;
       setIsCapturing(false);
       return;
     }
 
     try {
-      localStorage.removeItem("takenPhotos");
       localStorage.setItem("takenPhotos", JSON.stringify(photos));
-
-      console.log("Photos saved successfully, navigating...");
-      await sleep(300);
-      navigate("/customize");
     } catch (error) {
-      console.error("Save error:", error);
-
-      if (
-        error.name === "QuotaExceededError" ||
-        error.message?.includes("quota")
-      ) {
-        await saveCompressed(photos);
-      } else {
-        alert("Failed to save photos: " + error.message);
-        isCapturingRef.current = false;
-        setIsCapturing(false);
+      try {
+        const compressed = await Promise.all(
+          photos.map((p) => compressImage(p))
+        );
+        localStorage.setItem("takenPhotos", JSON.stringify(compressed));
+      } catch (e) {
+        console.error("Storage full");
       }
     }
-  }
 
-  async function saveCompressed(photos) {
-    try {
-      const compressedPhotos = await Promise.all(
-        photos.map((dataUrl) => compressImage(dataUrl))
-      );
-
-      localStorage.removeItem("takenPhotos");
-      localStorage.setItem("takenPhotos", JSON.stringify(compressedPhotos));
-
-      await sleep(300);
-      navigate("/customize");
-    } catch (error) {
-      alert("Photos are too large to save. Please try with fewer photos.");
-      isCapturingRef.current = false;
-      setIsCapturing(false);
+    if (activeSessionId) {
+      try {
+        const uploadPromises = photos.map((photoDataUrl) =>
+          axios.post(`${API_BASE_URL}/api/upload-photo`, {
+            session_id: activeSessionId,
+            photo_data: photoDataUrl,
+          })
+        );
+        await Promise.race([
+          Promise.all(uploadPromises),
+          new Promise((resolve) => setTimeout(resolve, 2000)),
+        ]);
+        await handleEndSession(activeSessionId);
+      } catch (error) {
+        console.error("Upload skipped:", error);
+      }
     }
+
+    await sleep(300);
+    navigate("/customize");
+
+    isCapturingRef.current = false;
+    setIsCapturing(false);
   }
 
   function compressImage(dataUrl) {
@@ -196,38 +227,16 @@ export default function CamPage() {
   function takeOnePhoto() {
     const video = videoRef.current;
     const canvas = canvasRef.current;
-
-    if (!video || !canvas) {
-      console.error("Video or canvas not available");
-      return null;
-    }
-
-    if (video.readyState < 2) {
-      console.error("Video not ready, readyState:", video.readyState);
-      return null;
-    }
+    if (!video || video.readyState < 2) return null;
 
     try {
       canvas.width = video.videoWidth;
       canvas.height = video.videoHeight;
-
       const ctx = canvas.getContext("2d");
       ctx.filter = filterRef.current;
       ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-      const dataUrl = canvas.toDataURL("image/jpeg", 0.8);
-
-      if (dataUrl && dataUrl.length > 100) {
-        console.log(
-          `Photo captured, size: ${Math.round(dataUrl.length / 1024)}KB`
-        );
-        return dataUrl;
-      }
-
-      console.error("Generated empty image");
-      return null;
+      return canvas.toDataURL("image/jpeg", 0.7);
     } catch (error) {
-      console.error("Error in takeOnePhoto:", error);
       return null;
     }
   }
@@ -318,7 +327,7 @@ export default function CamPage() {
       </button>
 
       {/* Filter selection */}
-      <h3 className="filter-title text-[1.1rem] font-bold">
+      <h3 className="filter-title text-[1.1rem] font-bold mt-5 mb-5">
         Choose a filter for your photos!
       </h3>
 
@@ -327,28 +336,27 @@ export default function CamPage() {
           Filter
         </span>
 
-        {[
-          { name: "No Filter", value: "none" },
-          { name: "B&W", value: "grayscale(100%) contrast(130%)" },
-          { name: "Sepia", value: "sepia(100%)" },
-          { name: "Vintage", value: "sepia(60%) contrast(110%)" },
-        ].map((f) => (
-          <button
-            key={f.name}
-            onClick={() => !isCapturing && setFilter(f.value)}
-            disabled={isCapturing}
-            className={`filter-option border-2 border-white rounded-[50px] px-[18px] py-[8px] mx-[5px] font-semibold transition 
-              ${
-                filter === f.value
-                  ? "bg-white text-[#610049]"
-                  : "bg-transparent text-white hover:bg-white hover:text-[#610049]"
-              }
-              ${isCapturing ? "opacity-50 cursor-not-allowed" : ""}
-            `}
-          >
-            {f.name}
-          </button>
-        ))}
+        {dbFilters.length > 0 ? (
+          dbFilters.map((f, index) => (
+            <button
+              key={index}
+              onClick={() => !isCapturing && setFilter(f.value)}
+              disabled={isCapturing}
+              className={`filter-option border-2 border-white rounded-[50px] px-[18px] py-[8px] mx-[5px] font-semibold transition 
+                ${
+                  filter === f.value
+                    ? "bg-white text-[#610049]"
+                    : "bg-transparent text-white hover:bg-white hover:text-[#610049]"
+                }
+                ${isCapturing ? "opacity-50 cursor-not-allowed" : ""}
+              `}
+            >
+              {f.name}
+            </button>
+          ))
+        ) : (
+          <span className="text-white px-4">Loading filters...</span>
+        )}
       </div>
 
       <canvas ref={canvasRef} className="hidden" />
