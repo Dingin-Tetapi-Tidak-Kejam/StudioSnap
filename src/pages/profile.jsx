@@ -245,11 +245,14 @@ const Profile = () => {
 
           <div className="w-full border-t-2 border-dashed border-[#610049]/20 mb-6"></div>
 
-          <div className="flex flex-col gap-3">
+        <div className="flex flex-col gap-3">
+              <p className="text-sm font-bold uppercase tracking-widest text-[#610049] py-1 mt-53border border-transparent"> 
+                Photos Taken : {stats.total_photos || 0}
+              </p>
             {!isEditing && (
               <button
                 onClick={() => navigate("/layout")}
-                className="text-xs font-bold uppercase tracking-widest text-[#610049] hover:bg-[#FCF9E9] py-2 border border-transparent hover:border-[#610049] transition-all"
+                className="text-sm font-bold uppercase tracking-widest text-[#610049] hover:bg-[#FCF9E9] py-2 mt-53border border-transparent hover:border-[#610049] transition-all"
               >
                 + Take New Photo
               </button>
@@ -273,13 +276,13 @@ const Profile = () => {
             ) : (
               <button
                 onClick={() => setIsEditing(true)}
-                className="text-xs font-bold uppercase tracking-widest text-blue-600 hover:text-blue-800 py-2"
+                className="text-sm font-bold uppercase tracking-widest text-blue-600 hover:text-blue-800 py-2"
               >
                 Edit Profile
               </button>
             )}
 
-            <div className="flex justify-between mt-2 pt-2 border-t border-gray-100">
+            <div className="flex justify-between mt-3 pt-2 border-t border-gray-100">
               <button
                 onClick={handleLogoutClick}
                 className="text-xs font-bold uppercase tracking-widest text-gray-400 hover:text-gray-600"
