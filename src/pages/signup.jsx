@@ -1,12 +1,26 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
+<<<<<<< Updated upstream
+=======
+const API_URL = "https://labpemwebbe.vercel.app";
+
+>>>>>>> Stashed changes
 const Signup = () => {
   const navigate = useNavigate();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [username, setUsername] = useState("");
+<<<<<<< Updated upstream
+=======
+  const [loading, setLoading] = useState(false);
+  const [popup, setPopup] = useState({
+    show: false,
+    message: "",
+    type: "",
+  });
+>>>>>>> Stashed changes
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -20,6 +34,30 @@ const Signup = () => {
 
   return (
     <>
+<<<<<<< Updated upstream
+=======
+      {popup.show && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm">
+          <div className="bg-[#FCF9E9] p-6 rounded-2xl shadow-2xl w-80 text-center border-2 border-[#610049] animate-bounce-in">
+            <h3
+              className={`text-2xl font-bold mb-2 ${
+                popup.type === "success" ? "text-green-600" : "text-red-600"
+              }`}
+            >
+              {popup.type === "success" ? "Welcome!" : "Oops!"}
+            </h3>
+            <p className="text-[#610049] mb-6 font-medium">{popup.message}</p>
+            <button
+              onClick={handleClosePopup}
+              className="bg-[#610049] text-white px-6 py-2 rounded-full font-bold hover:bg-[#4a003a] transition-transform transform hover:scale-105"
+            >
+              OK
+            </button>
+          </div>
+        </div>
+      )}
+
+>>>>>>> Stashed changes
       <div className="flex flex-col items-center justify-center min-h-screen z-10">
         <div className="bg-[#FCF9E9] backdrop-blur-md p-10 rounded-2xl w-full max-w-md shadow-lg">
           <h2 className="text-3xl font-semibold text-[#610049] text-center mb-6">

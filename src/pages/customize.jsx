@@ -8,6 +8,17 @@ export default function CustomizeStrip() {
   const [frameColor, setFrameColor] = useState("#000000");
   const [customColor, setCustomColor] = useState("#e9d5ff");
   const stripRef = useRef(null);
+<<<<<<< Updated upstream
+=======
+  
+  const API_BASE_URL = "https://labpemwebbe.vercel.app";
+
+  const [popup, setPopup] = useState({
+    show: false,
+    message: "",
+    type: "error",
+  });
+>>>>>>> Stashed changes
 
   const presetColors = [
     "#FFFFFF", // White
@@ -105,6 +116,53 @@ export default function CustomizeStrip() {
     setFrameColor(color);
   };
 
+<<<<<<< Updated upstream
+=======
+  const handleFeedbackSubmit = async () => {
+    if (rating === 0) {
+      setPopup({
+        show: true,
+        message: "Please select a star rating first!",
+        type: "warning",
+      });
+      return;
+    }
+    
+    const storedSessionId = localStorage.getItem("current_session_id");
+    const userStr = localStorage.getItem("user");
+    let userId = 1;
+
+    if (userStr) {
+        try {
+            const u = JSON.parse(userStr);
+            userId = u.id || u._id || 1;
+        } catch (e) { console.error(e); }
+    }
+
+    console.log("Mengirim feedback dengan Session ID:", storedSessionId);
+
+    setIsSubmitting(true);
+    try {
+      await axios.post(`${API_BASE_URL}/api/feedback`, {
+        session_id: storedSessionId ? parseInt(storedSessionId) : null, 
+        user_id: userId,
+        rating: rating,
+        comment: comment,
+      });
+      setFeedbackSent(true);
+    } catch (error) {
+      console.error("Feedback Error:", error.response?.data || error.message);
+      setPopup({
+        show: true,
+        message: "Failed to send feedback. Check console.",
+        type: "error",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+>>>>>>> Stashed changes
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen">
@@ -147,11 +205,20 @@ export default function CustomizeStrip() {
           ))}
         </div>
 
+<<<<<<< Updated upstream
         {/* Customization Panel */}
         <div className="flex flex-col items-center lg:items-start gap-6">
           <h1 className="text-3xl font-bold text-[#610049] text-center lg:text-left">
             Customize your photo strip !!!
           </h1>
+=======
+        <div className="flex flex-col items-center lg:items-start gap-6 w-full max-w-lg">
+          <div className="w-full space-y-6">
+            <div className="bg-[#FCF9E9] rounded-3xl shadow-lg border border-gray-100 p-6 sm:p-8 w-full">
+              <h2 className="text-lg font-bold text-[#610049] mb-4 flex items-center gap-2">
+                Choose Frame Color
+              </h2>
+>>>>>>> Stashed changes
 
           {/* Frame Color Selection */}
           <div className="flex flex-col gap-3">
